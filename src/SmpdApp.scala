@@ -11,8 +11,20 @@ object SmpdApp extends App {
   println("NearestNeighborAlgorithm-------------------------------------------------------------------------------------")
   new NearestNeighborAlgorithm(data).algorithm()
 
-  println("SeveralNearestNeighborAlgorithm------------------------------------------------------------------------------")
+  println("SeveralNearestNeighborAlgorithm-k=1--------------------------------------------------------------------------")
+  new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 1).algorithm()
+
+  println("SeveralNearestNeighborAlgorithm-k=2--------------------------------------------------------------------------")
+  new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 2).algorithm()
+
+  println("SeveralNearestNeighborAlgorithm-k-=3-------------------------------------------------------------------------")
   new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 3).algorithm()
+
+  println("SeveralNearestNeighborAlgorithm-k=5--------------------------------------------------------------------------")
+  new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 6).algorithm()
+
+  println("SeveralNearestNeighborAlgorithm-k=10-------------------------------------------------------------------------")
+  new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 10).algorithm()
 
   println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
   new AverageOfNearestNeighborAlgorithm(data = data).algorithm()

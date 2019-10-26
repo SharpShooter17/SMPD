@@ -6,24 +6,24 @@ import scala.math.{pow, sqrt}
 
 abstract class AlgorithmTemplate(data: PartitionedData) {
 
-  def distance(first: ObjectClass, second: ObjectClass): Double =
+  protected def distance(first: ObjectClass, second: ObjectClass): Double =
     sqrt(
-    first.characteristics.map {
-      case (characteristic, value) =>
-        val sumOfCharacteristics = value - second.characteristics(characteristic)
-        pow(sumOfCharacteristics, 2)
-    }.sum
+      first.characteristics.map {
+        case (characteristic, value) =>
+          val sumOfCharacteristics = value - second.characteristics(characteristic)
+          pow(sumOfCharacteristics, 2)
+      }.sum
     )
 
-
   def algorithm(): Unit = {
-    data.testingData.foreach(testingObject => {
-      val classification = classifyObject(testingObject)
-      println(s"Matched: ${classification.name == testingObject.name} " +
-        s"Original classification: ${testingObject.name} - Algorithm classification: ${classification.name}")
-    })
+    val results = data.testingData.map(testingObject => Matching(testingObject, classifyObject(testingObject)))
+    val matched = results.count(result => result.testedObject.name == result.classificationObject.name)
+    val percentOfMatchedObjects = (matched.doubleValue() / data.testingData.size.doubleValue()) * 100
+    println(s"All testing object: ${data.testingData.size}, Matched objects: $matched, Percent: $percentOfMatchedObjects%")
   }
 
-  def classifyObject(objectClass: ObjectClass): ObjectClass
+  protected def classifyObject(objectClass: ObjectClass): ObjectClass
+
+  case class Matching(testedObject: ObjectClass, classificationObject: ObjectClass)
 
 }
