@@ -2,16 +2,18 @@ package service
 
 import domain.{ObjectClass, PartitionedData}
 
-import scala.math.pow
+import scala.math.{pow, sqrt}
 
 abstract class AlgorithmTemplate(data: PartitionedData) {
 
   def distance(first: ObjectClass, second: ObjectClass): Double =
+    sqrt(
     first.characteristics.map {
       case (characteristic, value) =>
         val sumOfCharacteristics = value - second.characteristics(characteristic)
         pow(sumOfCharacteristics, 2)
     }.sum
+    )
 
 
   def algorithm(): Unit = {
