@@ -1,12 +1,12 @@
 import domain.{ObjectClass, PartitionedData}
-import service.{AverageOfNearestNeighborAlgorithm, NearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
+import service.{AverageOfNearestNeighborAlgorithm, NearestNeighborAlgorithm, SeveralAverageOfNearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
 
 import scala.io.Source._
 
 object SmpdApp extends App {
 
   val rawData = loadDataFromFile("data.txt")
-  val data = PartitionedData(rawData, 0.80)
+  val data = PartitionedData(rawData, 0.25)
 
   println("NearestNeighborAlgorithm-------------------------------------------------------------------------------------")
   new NearestNeighborAlgorithm(data).algorithm()
@@ -28,6 +28,9 @@ object SmpdApp extends App {
 
   println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
   new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
+
+  println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
+  new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
 
 
   private def loadDataFromFile(filename: String): Map[String, Vector[ObjectClass]] = {

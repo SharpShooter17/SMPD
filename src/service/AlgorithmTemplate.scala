@@ -4,7 +4,7 @@ import domain.{ObjectClass, PartitionedData}
 
 import scala.math.{pow, sqrt}
 
-abstract class AlgorithmTemplate(data: PartitionedData) {
+abstract class AlgorithmTemplate(partitionedData: PartitionedData) {
 
   protected def distance(first: ObjectClass, second: ObjectClass): Double =
     sqrt(
@@ -16,10 +16,10 @@ abstract class AlgorithmTemplate(data: PartitionedData) {
     )
 
   def algorithm(): Unit = {
-    val results = data.testingData.map(testingObject => Matching(testingObject, classifyObject(testingObject)))
+    val results = partitionedData.testingData.map(testingObject => Matching(testingObject, classifyObject(testingObject)))
     val matched = results.count(result => result.testedObject.name == result.classificationObject.name)
-    val percentOfMatchedObjects = (matched.doubleValue() / data.testingData.size.doubleValue()) * 100
-    println(s"All testing object: ${data.testingData.size}, Matched objects: $matched, Percent: $percentOfMatchedObjects%")
+    val percentOfMatchedObjects = (matched.doubleValue() / partitionedData.testingData.size.doubleValue()) * 100
+    println(s"All testing object: ${partitionedData.testingData.size}, Matched objects: $matched, Percent: $percentOfMatchedObjects%")
   }
 
   protected def classifyObject(objectClass: ObjectClass): ObjectClass
