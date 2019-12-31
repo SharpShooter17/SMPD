@@ -14,7 +14,7 @@ class AverageOfNearestNeighborAlgorithm(data: PartitionedData)
 
   private def averageObjectClass(data: Iterable[ObjectClass], className: String): ObjectClass = {
     val countOfObjects = data.size
-    val characteristics: Map[String, Double] = data.map(_.characteristics)
+    val characteristics = data.map(_.characteristics)
       .reduce((first, second) => first.map { case (characteristic, value) => (characteristic, value + second(characteristic)) })
       .map { case (characteristic, value) => (characteristic, value / countOfObjects) }
     ObjectClass(className, characteristics)

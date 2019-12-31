@@ -2,6 +2,8 @@ package service
 
 import domain.{ObjectClass, PartitionedData}
 
+
+// TODO: Fixme me please!
 class SeveralAverageOfNearestNeighborAlgorithm(partitionedData: PartitionedData)
   extends AlgorithmTemplate(partitionedData) {
 

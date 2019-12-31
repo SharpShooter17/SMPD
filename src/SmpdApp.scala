@@ -1,12 +1,13 @@
-import domain.{ObjectClass, PartitionedData}
-import service.{AverageOfNearestNeighborAlgorithm, NearestNeighborAlgorithm, SeveralAverageOfNearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
+import domain.{Data, ObjectClass, PartitionedData}
+import service.{AverageOfNearestNeighborAlgorithm, FisherExtractionService, NearestNeighborAlgorithm, SeveralAverageOfNearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
 
 import scala.io.Source._
 
 object SmpdApp extends App {
 
-  val rawData = loadDataFromFile("data.txt")
-  val data = PartitionedData(rawData, 0.25)
+  val rawData = loadDataFromFile(filename = "data.txt")
+  val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, 5)
+  val data = PartitionedData(data = dataWithExtractedCharacteristics, proportionOfTrainingSet = 0.25)
 
   println("NearestNeighborAlgorithm-------------------------------------------------------------------------------------")
   new NearestNeighborAlgorithm(data).algorithm()
@@ -17,7 +18,7 @@ object SmpdApp extends App {
   println("SeveralNearestNeighborAlgorithm-k=2--------------------------------------------------------------------------")
   new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 2).algorithm()
 
-  println("SeveralNearestNeighborAlgorithm-k-=3-------------------------------------------------------------------------")
+  println("SeveralNearestNeighborAlgorithm-k=3--------------------------------------------------------------------------")
   new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 3).algorithm()
 
   println("SeveralNearestNeighborAlgorithm-k=5--------------------------------------------------------------------------")
@@ -29,11 +30,10 @@ object SmpdApp extends App {
   println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
   new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
 
-  println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
-  new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
+  //  println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
+  //  new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
 
-
-  private def loadDataFromFile(filename: String): Map[String, Vector[ObjectClass]] = {
+  private def loadDataFromFile(filename: String): Data = {
     val source = fromFile(s"resources/$filename")
     val lines = source.getLines()
 
