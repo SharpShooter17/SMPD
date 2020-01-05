@@ -1,7 +1,9 @@
 package smpd.service
 
-import breeze.linalg.{DenseMatrix, det}
-import smpd.domain.{Characteristic, Data}
+import breeze.linalg.{DenseMatrix, det, eig}
+import smpd.domain.{Characteristic, Data, ObjectClass}
+
+import scala.collection.mutable.ListBuffer
 
 object FisherExtractionService {
 
@@ -13,15 +15,21 @@ object FisherExtractionService {
     val fisherFactors = characteristicsCombinations.map(combination =>
       (combination, fisherFactor(combination, data, averageOfCharacteristicsByClass, samplesAveragesByCharacteristic))
     )
+    val (bestCharacteristics, factor) = fisherFactors.maxBy(_._2)
+    println(s"The Best Combination\n\tFisher factor: $factor\n\tFor characteristics: ${bestCharacteristics.mkString(", ")}")
 
-    data
+    data.map {
+      case (className, samples) =>
+        val mappedSamples = samples.map(objectClass => objectClass.copy(characteristics = filterCharacteristics(bestCharacteristics, objectClass.characteristics)))
+        (className, mappedSamples)
+    }
   }
 
   private def fisherFactor(characteristics: List[String],
                            data: Data,
                            averageOfCharacteristicsByClass: Map[String, Characteristic],
-                           samplesAveragesByCharacteristic: Map[String, Double]): Double = {
-    val distance = vectorDistance(averageOfCharacteristicsByClass, samplesAveragesByCharacteristic, characteristics)
+                           samplesAveragesByCharacteristic: Characteristic): Double = {
+    val distance = vectorDistance(data, averageOfCharacteristicsByClass, samplesAveragesByCharacteristic, characteristics)
     val interClassSpread = countInterClassSpread(data, characteristics, averageOfCharacteristicsByClass)
     distance / interClassSpread
   }
@@ -29,32 +37,59 @@ object FisherExtractionService {
   private def countInterClassSpread(data: Data,
                                     characteristics: List[String],
                                     averageOfCharacteristicsByClass: Map[String, Characteristic]): Double = {
+    val filteredData = data.map {
+      case (className, samples) =>
+        val mappedSamples = samples.map {
+          case ObjectClass(_, ch) =>
+            extractData(characteristics, ch)
+        }
+        (className, mappedSamples)
+    }
 
+    filteredData.map {
+      case (className, samples) =>
+        val classMatrix = DenseMatrix(samples: _*).t
+        val average = extractData(characteristics, averageOfCharacteristicsByClass(className))
+        val matrixOfAverageBuilder = new ListBuffer[Vector[Double]]
+        for (_ <- 1 to classMatrix.cols) {
+          matrixOfAverageBuilder.addOne(average)
+        }
+        val averageMatrix = DenseMatrix(matrixOfAverageBuilder.toVector: _*).t
+        val diff = classMatrix - averageMatrix
+        val multiply = diff * diff.t
+        det(multiply)
+    }.sum
   }
 
-  private def vectorDistance(averageOfCharacteristicsByClass: Map[String, Characteristic],
+  private def vectorDistance(data: Data,
+                              averageOfCharacteristicsByClass: Map[String, Characteristic],
                              samplesAveragesByCharacteristic: Characteristic,
                              characteristics: List[String]): Double = {
     val averageByClass: Map[String, Vector[Double]] = averageOfCharacteristicsByClass.map {
       case (className, ch) =>
-        val mappedSamples =  filterCharacteristics(characteristics, ch).map(_._2)
+        val mappedSamples = extractData(characteristics, ch)
         (className, mappedSamples)
     }
 
-    val averages = filterCharacteristics(characteristics, samplesAveragesByCharacteristic).map(_._2)
+    val averages = extractData(characteristics, samplesAveragesByCharacteristic)
     val averagesMatrix = DenseMatrix(averages: _*)
 
     val sum = averageByClass.map {
-      case (_, matrix) =>
+      case (className, matrix) =>
         val diff = DenseMatrix(matrix: _*) - averagesMatrix
-        diff * diff.t
+        val multi = diff * diff.t
+        multi * data(className).size.toDouble
     }.reduce(_ + _)
 
     det(sum)
   }
 
-  private def filterCharacteristics(filter: List[String], characteristic: Characteristic) : Vector[(String, Double)] = {
-    characteristic.filter { case (name, _) => filter.contains(name) }.toVector.sortBy(_._1)
+  private def filterCharacteristics(filter: List[String], characteristic: Characteristic): Characteristic = {
+    characteristic.filter { case (name, _) => filter.contains(name) }
+  }
+
+  private def extractData(filter: List[String], characteristic: Characteristic): Vector[Double] = {
+    filterCharacteristics(filter, characteristic).toVector.sortBy(_._1).map(_._2)
   }
 
   private def classAverage(data: Data): Map[String, Characteristic] = {
@@ -69,7 +104,7 @@ object FisherExtractionService {
     }
   }
 
-  private def samplesAverage(data: Data): Map[String, Double] = {
+  private def samplesAverage(data: Data): Characteristic = {
     val samples = data.flatMap(_._2).map(_.characteristics)
     val countOfSamples = samples.size
     val sum = sumSamplesByCharacteristics(samples)

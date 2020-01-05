@@ -8,7 +8,7 @@ import scala.io.Source._
 object SmpdApp extends App {
 
   val rawData = loadDataFromFile(filename = "data.txt")
-  val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, 2)
+  val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, 3)
   val data = PartitionedData(data = dataWithExtractedCharacteristics, proportionOfTrainingSet = 0.25)
 
   println("NearestNeighborAlgorithm-------------------------------------------------------------------------------------")
