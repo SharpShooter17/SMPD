@@ -1,3 +1,5 @@
+package smpd
+
 package object domain {
 
   /**

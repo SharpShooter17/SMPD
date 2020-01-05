@@ -1,6 +1,6 @@
-package service
+package smpd.service
 
-import domain.{ObjectClass, PartitionedData}
+import smpd.domain.{ObjectClass, PartitionedData}
 
 class AverageOfNearestNeighborAlgorithm(data: PartitionedData)
   extends AlgorithmTemplate(data) {

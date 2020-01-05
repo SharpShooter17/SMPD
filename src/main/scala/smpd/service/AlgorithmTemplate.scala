@@ -1,6 +1,6 @@
-package service
+package smpd.service
 
-import domain.{ObjectClass, PartitionedData}
+import smpd.domain.{ObjectClass, PartitionedData}
 
 import scala.math.{pow, sqrt}
 

@@ -1,4 +1,4 @@
-package domain
+package smpd.domain
 
 class PartitionedData(val trainingData: Iterable[ObjectClass],
                       val testingData: Iterable[ObjectClass])

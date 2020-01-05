@@ -32,3 +32,4 @@ build
 *.class
 
 out/
+null/
