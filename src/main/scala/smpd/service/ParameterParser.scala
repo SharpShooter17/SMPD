@@ -4,7 +4,7 @@ import smpd.domain.Parameters
 
 object ParameterParser {
 
-  private val availableAlgorithms = List("NN", "SNN", "ANN")
+  private val availableAlgorithms = List("NN", "SNN", "ANN", "SANN")
 
   def parseArgs(args: List[String]) : Parameters = {
     val map = nextOption(Map.empty, args)
@@ -44,6 +44,7 @@ object ParameterParser {
     println("\t\tNN - Nearest Neighbor")
     println("\t\tSNN - Several Nearest Neighbor")
     println("\t\tANN - Average Of Nearest Neighbor")
+    println("\t\tANN - Several Average Of Nearest Neighbor")
     println("\t-testing X - percent of testing objects, default is set to 0.25")
     println("\t-k X - count of nearest neighbors, default is set to 1")
     println("\t-ch X - count of characteristics, default is set to 3")

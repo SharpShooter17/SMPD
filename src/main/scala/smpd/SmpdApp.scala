@@ -41,9 +41,8 @@ object SmpdApp extends App {
       case "NN" => new NearestNeighborAlgorithm(data).algorithm()
       case "SNN" => new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = parameters.k).algorithm()
       case "ANN" => new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
+      case "SANN" => new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
     }
-    //  println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
-    //  new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
   }
 
   private def bruteForce(data: Data): Unit = {
