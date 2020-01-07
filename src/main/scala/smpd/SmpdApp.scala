@@ -2,15 +2,16 @@ package smpd
 
 import smpd.domain.{Data, ObjectClass, PartitionedData}
 import smpd.service.FisherExtractionService.filterCharacteristics
-import smpd.service.{AverageOfNearestNeighborAlgorithm, FisherExtractionService, NearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
+import smpd.service._
 
 import scala.io.Source._
 
 object SmpdApp extends App {
 
-  val rawData = loadDataFromFile(filename = "data.txt")
-
+  val parameters = ParameterParser.parseArgs(args = args.toList)
+  val rawData = loadDataFromFile(filename = parameters.file)
   run()
+
 
   private def loadDataFromFile(filename: String): Data = {
     val source = fromFile(s"resources/$filename")
@@ -33,30 +34,14 @@ object SmpdApp extends App {
   }
 
   private def run(): Unit = {
-    val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, 3)
-    val data = PartitionedData(data = dataWithExtractedCharacteristics, proportionOfTrainingSet = 0.25)
+    val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, countOfCharacteristics = parameters.characteristics)
+    val data = PartitionedData(data = dataWithExtractedCharacteristics, proportionOfTrainingSet = parameters.testing)
 
-    println("NearestNeighborAlgorithm-------------------------------------------------------------------------------------")
-    new NearestNeighborAlgorithm(data).algorithm()
-
-    println("SeveralNearestNeighborAlgorithm-k=1--------------------------------------------------------------------------")
-    new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 1).algorithm()
-
-    println("SeveralNearestNeighborAlgorithm-k=2--------------------------------------------------------------------------")
-    new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 2).algorithm()
-
-    println("SeveralNearestNeighborAlgorithm-k=3--------------------------------------------------------------------------")
-    new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 3).algorithm()
-
-    println("SeveralNearestNeighborAlgorithm-k=5--------------------------------------------------------------------------")
-    new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 6).algorithm()
-
-    println("SeveralNearestNeighborAlgorithm-k=10-------------------------------------------------------------------------")
-    new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = 10).algorithm()
-
-    println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
-    new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
-
+    parameters.algorithm match {
+      case "NN" => new NearestNeighborAlgorithm(data).algorithm()
+      case "SNN" => new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = parameters.k).algorithm()
+      case "ANN" => new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
+    }
     //  println("AverageOfNearestNeighborAlgorithm----------------------------------------------------------------------------")
     //  new SeveralAverageOfNearestNeighborAlgorithm(partitionedData = data).algorithm()
   }
