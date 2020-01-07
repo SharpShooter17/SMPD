@@ -10,7 +10,7 @@ class SeveralAverageOfNearestNeighborAlgorithm(partitionedData: PartitionedData)
   private var allData = partitionedData.testingData ++ partitionedData.trainingData
   private var averages = allData.groupBy(_.name).map(grouped => averageObjectClass(grouped._2.take(2), grouped._1))
 
-  override def algorithm(): Unit = {
+  override def algorithm(): Double = {
     countClassNumbers
     var changedClass = false
     var countOfIterations = 0
@@ -30,6 +30,7 @@ class SeveralAverageOfNearestNeighborAlgorithm(partitionedData: PartitionedData)
     println("After algorithm--------------------------------------------------------------------------------------------")
     println(s"Count of iterations $countOfIterations")
     countClassNumbers
+    0.0
   }
 
   override def classifyObject(objectClass: ObjectClass): ObjectClass = {

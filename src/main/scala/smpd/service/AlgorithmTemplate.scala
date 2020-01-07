@@ -15,11 +15,12 @@ abstract class AlgorithmTemplate(partitionedData: PartitionedData) {
       }.sum
     )
 
-  def algorithm(): Unit = {
+  def algorithm(): Double = {
     val results = partitionedData.testingData.map(testingObject => Matching(testingObject, classifyObject(testingObject)))
     val matched = results.count(result => result.testedObject.name == result.classificationObject.name)
     val percentOfMatchedObjects = (matched.doubleValue() / partitionedData.testingData.size.doubleValue()) * 100
     println(s"All testing object: ${partitionedData.testingData.size}, Matched objects: $matched, Percent: $percentOfMatchedObjects%")
+    percentOfMatchedObjects
   }
 
   protected def classifyObject(objectClass: ObjectClass): ObjectClass

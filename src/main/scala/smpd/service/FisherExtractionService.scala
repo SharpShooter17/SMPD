@@ -1,6 +1,6 @@
 package smpd.service
 
-import breeze.linalg.{DenseMatrix, det, eig}
+import breeze.linalg.{DenseMatrix, det}
 import smpd.domain.{Characteristic, Data, ObjectClass}
 
 import scala.collection.mutable.ListBuffer
@@ -15,6 +15,7 @@ object FisherExtractionService {
     val fisherFactors = characteristicsCombinations.map(combination =>
       (combination, fisherFactor(combination, data, averageOfCharacteristicsByClass, samplesAveragesByCharacteristic))
     )
+
     val (bestCharacteristics, factor) = fisherFactors.maxBy(_._2)
     println(s"The Best Combination\n\tFisher factor: $factor\n\tFor characteristics: ${bestCharacteristics.mkString(", ")}")
 
@@ -84,7 +85,7 @@ object FisherExtractionService {
     det(sum)
   }
 
-  private def filterCharacteristics(filter: List[String], characteristic: Characteristic): Characteristic = {
+  def filterCharacteristics(filter: List[String], characteristic: Characteristic): Characteristic = {
     characteristic.filter { case (name, _) => filter.contains(name) }
   }
 
