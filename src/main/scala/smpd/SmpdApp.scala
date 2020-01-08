@@ -1,7 +1,6 @@
 package smpd
 
 import smpd.domain.{Data, ObjectClass, PartitionedData}
-import smpd.service.FisherExtractionService.filterCharacteristics
 import smpd.service._
 
 import scala.io.Source._
@@ -34,10 +33,16 @@ object SmpdApp extends App {
   }
 
   private def run(): Unit = {
-    val dataWithExtractedCharacteristics = FisherExtractionService.extraction(rawData, countOfCharacteristics = parameters.characteristics)
+
+    val extractionAlgorithm = parameters.extraction match {
+      case "fisher" => new FisherExtractionService(rawData)
+      case "sfs" => new SFSExtractionService(rawData)
+    }
+
+    val dataWithExtractedCharacteristics = extractionAlgorithm.extract(countOfCharacteristics = parameters.characteristics)
     val data = PartitionedData(data = dataWithExtractedCharacteristics, proportionOfTrainingSet = parameters.testing)
 
-    parameters.algorithm match {
+    parameters.classification match {
       case "NN" => new NearestNeighborAlgorithm(data).algorithm()
       case "SNN" => new SeveralNearestNeighborAlgorithm(data = data, countOfNeighborToMatch = parameters.k).algorithm()
       case "ANN" => new AverageOfNearestNeighborAlgorithm(data = data).algorithm()
@@ -52,7 +57,7 @@ object SmpdApp extends App {
     val theBest = characteristicsCombinations.map(combination => {
       val filteredData = data.map {
         case (className, samples) =>
-          val mappedSamples = samples.map(objectClass => objectClass.copy(characteristics = filterCharacteristics(combination, objectClass.characteristics)))
+          val mappedSamples = samples.map(objectClass => objectClass.copy(characteristics = objectClass.characteristics.filter { case (name, _) => combination.contains(name) }))
           (className, mappedSamples)
       }
       val partitionedData = PartitionedData(data = filteredData, proportionOfTrainingSet = 0.25)

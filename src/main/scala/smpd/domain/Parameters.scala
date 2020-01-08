@@ -2,6 +2,7 @@ package smpd.domain
 
 case class Parameters(file: String,
                       k: Int,
-                      algorithm: String,
+                      classification: String,
+                      extraction: String,
                       testing: Double,
                       characteristics: Int)
