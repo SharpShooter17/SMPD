@@ -1,4 +1,4 @@
-package smpd.service
+package smpd.service.classification
 
 import smpd.domain.{ObjectClass, PartitionedData}
 

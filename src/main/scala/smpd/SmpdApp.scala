@@ -2,6 +2,8 @@ package smpd
 
 import smpd.domain.{Data, ObjectClass, PartitionedData}
 import smpd.service._
+import smpd.service.classification.{AverageOfNearestNeighborAlgorithm, NearestNeighborAlgorithm, SeveralAverageOfNearestNeighborAlgorithm, SeveralNearestNeighborAlgorithm}
+import smpd.service.extraction.{FisherExtractionService, SFSExtractionService}
 
 import scala.io.Source._
 

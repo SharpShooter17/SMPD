@@ -1,4 +1,4 @@
-package smpd.service
+package smpd.service.extraction
 
 import breeze.linalg.{DenseMatrix, det}
 import smpd.domain.{Characteristic, Data, ObjectClass}

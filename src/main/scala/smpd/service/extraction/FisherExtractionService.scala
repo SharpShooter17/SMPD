@@ -1,4 +1,4 @@
-package smpd.service
+package smpd.service.extraction
 
 import smpd.domain.Data
 
